@@ -52,14 +52,16 @@ module cart_quirks (
             if (cart_id[31:8] == "BT4") sram_quirk <= 1; // no SRAM
 
             // === GPIO quirk only (RTC, special peripherals) ===
-            if (cart_id[31:8] == "BPE") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC
-            if (cart_id[31:8] == "AXV") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC
-            if (cart_id[31:8] == "AXP") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC
+            if (cart_id[31:8] == "BPE") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC (Emerald)
+            if (cart_id[31:8] == "AXV") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC (Ruby)
+            if (cart_id[31:8] == "AXP") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC (Sapphire)
             if (cart_id[31:8] == "RZW") gpio_quirk <= 1; // gyro
-            if (cart_id[31:8] == "BKA") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC
-            if (cart_id[31:8] == "BR4") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC
+            if (cart_id[31:8] == "BKA") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC (Boktai)
+            if (cart_id[31:8] == "BR4") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC (Rockman EXE 4)
             if (cart_id[31:8] == "V49") gpio_quirk <= 1; // rumble
             if (cart_id[31:8] == "2GB") gpio_quirk <= 1; // GPIO
+            if (cart_id       == "BPBE") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC (Pokemon Unbound)
+            if (cart_id       == "BPRX") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC (FireRed RTC / CFRU)
 
             // === Sprite quirk only ===
             if (cart_id[31:8] == "BHG") sprite_quirk <= 1; // sprite limit
