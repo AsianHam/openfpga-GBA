@@ -79,7 +79,7 @@
         ]
       },
       {
-        "name": "Force Quirk (Dangerous)",
+        "name": "RTC Mode",
         "id": 30,
         "type": "list",
         "enabled": true,
@@ -89,12 +89,16 @@
         "defaultval": 0,
         "options": [
           {
-            "name": "Off",
+            "name": "Auto (Default)",
             "value": 0
           },
           {
-            "name": "On",
+            "name": "Force On",
             "value": 1
+          },
+          {
+            "name": "Force Off",
+            "value": 2
           }
         ]
       }

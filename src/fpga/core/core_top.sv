@@ -949,6 +949,7 @@ save_type_detector save_det (
 
     // Results
     .flash_1m        ( det_flash_1m ),
+    .rtc_detected    ( det_rtc ),
     .cart_id         ( detected_cart_id ),
     .cart_id_valid   ( det_cart_id_valid )
 );
@@ -1385,10 +1386,11 @@ synch_3 flash_1m_sync (
     .clk ( clk_74a )
 );
 
-wire rtc_quirk_s;
-synch_3 rtc_quirk_sync (
-    .i   ( quirk_rtc ),
-    .o   ( rtc_quirk_s ),
+wire rtc_auto = quirk_rtc | det_rtc;
+wire rtc_auto_s;
+synch_3 rtc_auto_sync (
+    .i   ( rtc_auto ),
+    .o   ( rtc_auto_s ),
     .clk ( clk_74a )
 );
 
@@ -1401,7 +1403,10 @@ synch_3 rtc_quirk_sync (
 // but many (e.g. Dragon Ball Z titles) use EEPROM at 0xD for actual saves.
 // bus_out FSM packs save bytes densely (1 byte per PSRAM byte), so these
 // sizes match the actual save type sizes. RTC is a separate fixed-size slot.
-wire        rtc_active = rtc_quirk_s | force_rtc;
+// rtc_mode: 0 = Auto (uses rtc_auto_s), 1 = Force On, 2 = Force Off
+wire        rtc_active = (rtc_mode == 2'd1) ? 1'b1 :
+                         (rtc_mode == 2'd2) ? 1'b0 :
+                         rtc_auto_s;
 wire [31:0] save_size_bytes = flash_1m_s ? 32'h0002_0000 : 32'h0001_0000;
 wire [31:0] rtc_size_bytes = rtc_active ? 32'd16 : 32'd0;
 
@@ -1429,7 +1434,7 @@ end
 
 // ---- Interact menu config registers (clk_74a domain) ----
 reg [1:0] ff_mode = 0;    // 0 = Hold, 1 = Toggle, 2 = Disabled
-reg force_rtc = 0;        // 0 = Off, 1 = Force enable RTC/GPIO
+reg [1:0] rtc_mode = 2'd0; // 0 = Auto, 1 = Force On, 2 = Force Off
 reg [1:0] turbo_mode = 0; // 0 = Disabled, 1 = Turbo A, 2 = Turbo B
 reg ff_video_stable = 1'b1; // 0 = Classic FF, 1 = wait for complete rendered lines
 
@@ -1444,7 +1449,7 @@ always @(posedge clk_74a) begin
         casex (bridge_addr)
         32'hF0000000: reset_counter <= 14'd8000;  // ~108 us at 74.25 MHz
         32'h80: ff_mode        <= bridge_wr_data[1:0];
-        32'h84: force_rtc      <= bridge_wr_data[0];
+        32'h84: rtc_mode       <= bridge_wr_data[1:0];
         32'h88: turbo_mode     <= bridge_wr_data[1:0];
         32'h8C: ff_video_stable <= bridge_wr_data[0];
         endcase
@@ -1455,8 +1460,8 @@ end
 wire [1:0] ff_mode_s;
 synch_3 #(.WIDTH(2)) ff_mode_sync(ff_mode, ff_mode_s, clk_sys);
 
-wire force_rtc_s;
-synch_3 force_rtc_sync(force_rtc, force_rtc_s, clk_sys);
+wire [1:0] rtc_mode_s;
+synch_3 #(.WIDTH(2)) rtc_mode_sync(rtc_mode, rtc_mode_s, clk_sys);
 
 wire [1:0] turbo_mode_s;
 synch_3 #(.WIDTH(2)) turbo_mode_sync(turbo_mode, turbo_mode_s, clk_sys);
@@ -1681,7 +1686,7 @@ gba_top #(
     .save_state          ( ss_save ),
     .load_state          ( ss_load ),
     .maxpixels           ( quirk_sprite ),
-    .specialmodule       ( quirk_gpio | force_rtc_s ),
+    .specialmodule       ( (rtc_mode_s == 2'd1) ? 1'b1 : (rtc_mode_s == 2'd2) ? (quirk_gpio & ~quirk_rtc) : (quirk_gpio | det_rtc) ),
     .Rumble              ( cart_rumble ),
     .savestate_number    ( 0 ),
     // RTC
