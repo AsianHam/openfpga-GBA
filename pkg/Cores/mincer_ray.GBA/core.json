@@ -9,7 +9,7 @@
       "description": "Game Boy Advance with Auto-RTC. Active development, check the README for more feature info.",
       "author": "mincer_ray",
       "url": "https://github.com/AsianHam/openfpga-GBA",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "date_release": "2026-10-19"
     },
     "framework": {
