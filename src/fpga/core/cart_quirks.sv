@@ -62,6 +62,7 @@ module cart_quirks (
             if (cart_id[31:8] == "2GB") gpio_quirk <= 1; // GPIO
             if (cart_id       == "BPBE") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC (Pokemon Unbound)
             if (cart_id       == "BPRX") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC (FireRed RTC / CFRU)
+            if (cart_id       == "CFRU") begin gpio_quirk <= 1; rtc_quirk <= 1; end // RTC (CFRU)
 
             // === Sprite quirk only ===
             if (cart_id[31:8] == "BHG") sprite_quirk <= 1; // sprite limit
