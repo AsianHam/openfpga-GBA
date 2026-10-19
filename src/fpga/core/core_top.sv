@@ -1687,7 +1687,7 @@ gba_top #(
     .save_state          ( ss_save ),
     .load_state          ( ss_load ),
     .maxpixels           ( quirk_sprite ),
-    .specialmodule       ( (rtc_mode_s == 2'd1) ? 1'b1 : (rtc_mode_s == 2'd2) ? (quirk_gpio & ~quirk_rtc) : (quirk_gpio | det_rtc) ),
+    .specialmodule       ( (rtc_mode_s == 2'd1) ? 1'b1 : (rtc_mode_s == 2'd2) ? (quirk_gpio & ~quirk_rtc) : (quirk_gpio | quirk_rtc | det_rtc) ),
     .Rumble              ( cart_rumble ),
     .savestate_number    ( 0 ),
     // RTC

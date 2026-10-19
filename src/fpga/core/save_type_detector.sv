@@ -101,7 +101,22 @@ module save_type_detector (
                     cart_title[95:16] == "POKEMON RADI" ||
                     cart_title[95:24] == "RADICALRED"   ||
                     cart_title[95:24] == "LIQUIDCRYS"   ||
-                    cart_title[95:24] == "INCLEMENTEM") begin
+                    cart_title[95:24] == "INCLEMENTEM"  ||
+                    cart_title[95:40] == "UNBOUND"      ||
+                    cart_title        == "POKE UNBOUND") begin
+                    rtc_detected <= 1'b1;
+                end
+            end
+
+            // Auto-detect expanded FireRed / LeafGreen ROM hacks (e.g. CFRU, Pokemon Unbound).
+            // Retail FireRed/LeafGreen are strictly 16MB (max rom_addr = 0x00FF_FFFE) and have no RTC.
+            // ROM hacks expanded beyond 16MB (rom_addr >= 0x0100_0000) based on FireRed/LeafGreen
+            // implement CFRU RTC engine without Nintendo's "SIIRTC_V" string signature.
+            if (rom_addr >= 28'h0100_0000) begin
+                if (cart_id[31:8] == "BPR" ||
+                    cart_id[31:8] == "BPG" ||
+                    cart_title == "POKEMON FIRE" ||
+                    cart_title == "POKEMON LEAF") begin
                     rtc_detected <= 1'b1;
                 end
             end
