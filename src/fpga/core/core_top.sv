@@ -935,6 +935,7 @@ wire [24:0] max_rom_addr = (last_rom_byte_addr + 26'd2) >> 2;
 // Watches rom_loader_wr/data/addr during boot — no SDRAM reads needed.
 // Detection results are ready by the time dataslot_allcomplete fires.
 wire        det_flash_1m;
+wire        det_rtc;
 wire [31:0] detected_cart_id;
 wire        det_cart_id_valid;
 
